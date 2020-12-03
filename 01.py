@@ -22,7 +22,7 @@ for e in expenses:
     else:
         looking_for.add(e_other)
 
-for i in range(0, len(expenses)):
+for i in range(len(expenses)):
     looking_for = set()
     target = TARGET - expenses[i]
     for j in expenses[i:]:
