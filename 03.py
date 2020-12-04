@@ -20,7 +20,7 @@ def count_trees(m, s):
     return tree_count
 
 m = []
-with open ('03.in', 'r') as f:
+with open('03.in', 'r') as f:
     for l in f.readlines():
         m.append(MapRow(l.strip()))
 
