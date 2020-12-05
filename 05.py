@@ -3,11 +3,13 @@
 import sys
 
 class Seat:
-    ROW_COUNT = 128
-    COL_COUNT = 8
-
-    def __init__(self, str_):
-        self.str = str_
+    def __init__(self, s):
+        BIN_MAP = {
+                'F': '0',
+                'B': '1',
+                'L': '0',
+                'R': '1'}
+        self.bin_str = ''.join([BIN_MAP[c] for c in s])
     
     def __str__(self):
         return self.str
@@ -16,29 +18,13 @@ class Seat:
         return self.__str__()
 
     def row(self):
-        partition = self.str[:7]
-        min_ = 0
-        max_ = Seat.ROW_COUNT
-        for p in partition:
-            if p == 'F':
-                max_ = min_ + (max_ - min_) / 2
-            if p == 'B':
-                min_ = max_ - (max_ - min_) / 2
-        return int(min_)
+        return int(self.bin_str[:7], 2)
 
     def col(self):
-        partition =self.str[-3:]
-        min_ = 0
-        max_ = Seat.COL_COUNT
-        for p in partition:
-            if p == 'L':
-                max_ = min_ + (max_ - min_) / 2
-            if p == 'R':
-                min_ = max_ - (max_ - min_) / 2
-        return int(min_)
+        return int(self.bin_str[-3:], 2)
 
     def id(self):
-        return int(self.row() * 8 + self.col())
+        return int(self.bin_str, 2)
 
 # seats = []
 # with open('05.ex', 'r') as f:
@@ -75,4 +61,7 @@ for s in seats:
         possible.add(id_ - 1)
     if not (id_ + 1) in taken:
         possible.add(id_ + 1)
-print(f'[05b] The only open seat has an id of: {list(possible)[1]}.')
+# the 1st entry (at index 0) will be from a row that doesn't exist on this
+# plane.
+open_seat = list(possible)[1]
+print(f'[05b] The first open seat has an id of: {open_seat}.')
