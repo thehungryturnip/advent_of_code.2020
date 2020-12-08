@@ -4,16 +4,13 @@ from collections import namedtuple
 
 Instruction = namedtuple('Instruction', ['cmd', 'val'])
 
-class Accumulator():
-    def __init__(self):
-        self.ins = []
-
+class Accumulator(list):
     def add_instruction(self, cmd, val):
-        self.ins.append(Instruction(cmd, val))
+        self.append(Instruction(cmd, val))
 
     def execute_instruction(self, i, a, swap):
-        cmd = self.ins[i].cmd
-        val = self.ins[i].val
+        cmd = self[i].cmd
+        val = self[i].val
 
         if cmd == 'nop' or (cmd == 'jmp' and swap):
             return i + 1, a
@@ -26,7 +23,7 @@ class Accumulator():
         seen = set()
         i = 0
         a = 0
-        while i < len(self.ins):
+        while i < len(self):
             if i in seen:
                 return False, i, a
             seen.add(i)
@@ -35,8 +32,8 @@ class Accumulator():
         return True, i, a
 
     def attempt_fix(self):
-        for i in range(len(self.ins)):
-            cmd = self.ins[i].cmd
+        for i in range(len(self)):
+            cmd = self[i].cmd
             if cmd == 'nop' or cmd == 'jmp':
                 success, ins, val, = self.execute(i)
                 if success:
