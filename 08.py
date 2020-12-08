@@ -8,18 +8,18 @@ class Accumulator(list):
     def add_instruction(self, cmd, val):
         self.append(Instruction(cmd, val))
 
-    def execute_instruction(self, i, a, swap):
+    def execute_instruction(self, i, a, swapping):
         cmd = self[i].cmd
         val = self[i].val
 
-        if cmd == 'nop' or (cmd == 'jmp' and swap):
+        if cmd == 'nop' or (cmd == 'jmp' and swapping):
             return i + 1, a
         if cmd == 'acc':
             return i + 1, a + val
-        if cmd == 'jmp' or (cmd == 'nop' and swap):
+        if cmd == 'jmp' or (cmd == 'nop' and swapping):
             return i + val, a
 
-    def execute(self, swap=-1):
+    def execute(self, to_swap=None):
         seen = set()
         i = 0
         a = 0
@@ -28,13 +28,12 @@ class Accumulator(list):
                 return False, i, a
             seen.add(i)
 
-            i, a = self.execute_instruction(i, a, i==swap)
+            i, a = self.execute_instruction(i, a, i==to_swap)
         return True, i, a
 
     def attempt_fix(self):
         for i in range(len(self)):
-            cmd = self[i].cmd
-            if cmd == 'nop' or cmd == 'jmp':
+            if self[i].cmd in ['nop', 'jmp']:
                 success, ins, val, = self.execute(i)
                 if success:
                     return ins, val
