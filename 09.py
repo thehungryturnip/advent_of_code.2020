@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-def add_two(target, nums):
+def sum_two(target, nums):
     looking_for = set()
     for n in nums:
         if n in looking_for:
@@ -27,12 +27,12 @@ with open('09.in', 'r') as f:
 
 PREAMBLE_LENGTH = 25
 for i in range(PREAMBLE_LENGTH, len(nums)):
-    if not add_two(nums[i], nums[i - PREAMBLE_LENGTH: i]):
+    if not sum_two(nums[i], nums[i - PREAMBLE_LENGTH: i]):
         invalid_num = nums[i]
         print(f'[09a] Unable to find 2 numbers that sums to: {invalid_num}.')
 
-contgious_set = sum_to(invalid_num, nums)
-min_ = min(contgious_set)
-max_ = max(contgious_set)
-print(f'[09b] The smallest and largerst numbers in the contgious set that '
+contagious_set = sum_to(invalid_num, nums)
+min_ = min(contagious_set)
+max_ = max(contagious_set)
+print(f'[09b] The smallest and largerst numbers in the contagious set that '
       f'sums to {invalid_num} add up to {min_ + max_}.')
