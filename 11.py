@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from functools import lru_cache
 from time import perf_counter
 
 class Field(list):
