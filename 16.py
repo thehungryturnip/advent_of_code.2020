@@ -17,25 +17,12 @@ def sum_invalid_vals(ticket, fields):
     return sum(find_invalid_vals(ticket, fields))
 
 def val_in_ranges(val, ranges):
-    for r in ranges:
-        if r[0] <= val <= r[1]:
-            return True
-    return False
     return any([range_[0] <= val <= range_[1] for range_ in ranges])
 
 def vals_in_ranges(vals, ranges):
-    for v in vals:
-        if not val_in_ranges(v, ranges):
-            return False
-    return True
     return all([val_in_ranges(val, ranges) for val in vals])
 
 def potential_fields(vals, fields):
-    potential = []
-    for f in fields:
-        if vals_in_ranges(vals, fields[f]):
-            potential.append(f)
-    return potential
     return [f for f in fields if vals_in_ranges(vals, fields[f])]
 
 def clear_position(position, candidates):
