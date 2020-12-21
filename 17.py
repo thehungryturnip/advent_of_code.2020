@@ -36,19 +36,14 @@ def find_blocks_to_activate(active_coords, hyper):
             to_activate.add(n)
     to_activate = [c for c in to_activate 
                    if count_active_neighbors(c, active_coords, hyper) == 3]
-    # to_activate = set([n 
-                       # for a in active_coords 
-                       # for n in return_neighbors(a, hyper) 
-                       # if count_active_neighbors(n, active_coords, hyper) == 3])
     return to_activate
 
 def process_round(active_coords, hyper=False):
     to_deactivate = find_blocks_to_deactivate(active_coords, hyper)
     to_activate = find_blocks_to_activate(active_coords, hyper)
-    for b in to_activate:
-        active_coords.add(b)
-    for b in to_deactivate:
-        active_coords.remove(b)
+    active_coords = active_coords | to_activate
+    active_coords = active_coords - to_deactivate
+    return active_coords
 
 def print_coords(coords):
     min_x = max_x = min_y = max_y = min_z = max_z = 0
@@ -87,11 +82,8 @@ with open('17.in', 'r') as f:
 tic = perf_counter()
 rounds = 6
 active_coords = set(initial_state)
-# print_coords(active_coords)
 for i in range(1, rounds + 1):
-    # print(f'\nround={i}')
-    process_round(active_coords)
-    # print_coords(active_coords)
+    active_coords = process_round(active_coords)
 toc = perf_counter()
 print(f'[17a] The number of active blocks after {rounds} rounds is: '
       f'{len(active_coords)}. ({toc - tic})')
@@ -99,11 +91,8 @@ print(f'[17a] The number of active blocks after {rounds} rounds is: '
 tic = perf_counter()
 rounds = 6
 active_coords = set(initial_state)
-# print_coords(active_coords)
 for i in range(1, rounds + 1):
-    # print(f'\nround={i}')
-    process_round(active_coords, hyper=True)
-    # print_coords(active_coords)
+    active_coords = process_round(active_coords, hyper=True)
 toc = perf_counter()
 print(f'[17b] The number of active blocks after {rounds} rounds is: '
       f'{len(active_coords)}. ({toc - tic})')
