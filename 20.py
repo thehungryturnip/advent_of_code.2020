@@ -16,10 +16,10 @@ class Tile:
                       }
 
     def __str__(self):
-        return f'<{str(self.id)}>'
+        return f'[{self.id}]\n' + '\n'.join([''.join(r) for r in self.image])
 
     def __repr__(self):
-        return f'[{self.id}]\n' + '\n'.join([''.join(r) for r in self.image])
+        return f'<{str(self.id)}>'
 
     def flip(self):
         self.image = self.image[::-1]
@@ -31,14 +31,16 @@ class Tile:
             self.edges[v[0]] = v[1]
 
     def rotate(self):
-        size = len(self.image) - 1 # assumes that tiles are square
-        for r in range(size // 2):
-            for c in range(r, size - r):
+        s = len(self.image) # assumes that tiles are square
+        for r in range(s // 2):
+        # for r in range(2):
+            for c in range(s // 2):
+            # for c in range(2):
                 top_left = self.image[r][c]
-                self.image[r][c] = self.image[size - c][r]
-                self.image[size - c][r] = self.image[size - r][size - c]
-                self.image[size - r][size - c] = self.image[c][size - r]
-                self.image[c][size - r] = top_left
+                self.image[r][c] = self.image[s - 1 - c][r]
+                self.image[s - 1 - c][r] = self.image[s - 1 - r][s - 1 - c]
+                self.image[s - 1 - r][s - 1 - c] = self.image[c][s - 1 - r]
+                self.image[c][s - 1 - r] = top_left
 
         mapping = (('t', 'l'), ('r', 't'), ('b', 'r'), ('l', 'b'))
         vals = [(m[0], self.edges[m[1]]) for m in mapping]
@@ -68,6 +70,13 @@ class Tile:
         return [r[1:-1] for r in self.image[1:-1]]
 
 class TileLibrary:
+
+    NESSIE_COORD = set([(0, 18), (1, 0), (1, 5), (1, 6), (1, 11), (1, 12),
+                        (1, 17), (1, 18), (1, 19), (2, 1), (2, 4), (2, 7),
+                        (2, 10), (2, 13), (2, 16)])
+    NESSIE_WIDTH = 20
+    NESSIE_HEIGHT = 3
+
     def __init__(self):
         self.tiles = set()
 
@@ -144,32 +153,24 @@ class TileLibrary:
 
     def calculate_roughness(self):
         t = Tile(None, self.get_image())
-        nessies = []
+        count = []
         for _ in range(4):
-            nessies.append(self.count_nessies(t))
+            count.append(self.count_nessies(t))
             t.rotate()
         t.flip()
         for _ in range(4):
-            nessies.append(self.count_nessies(t))
+            count.append(self.count_nessies(t))
             t.rotate()
-        print(nessies)
+        return str(t).count('#') - sum(count) * len(self.NESSIE_COORD)
 
     def count_nessies(self, t):
-        nessie = set([(0, 18), (1, 0), (1, 5), (1, 6), (1, 11), (1, 12),
-                      (1, 17), (1, 18), (1, 19), (2, 1), (2, 4), (2, 7),
-                      (2, 10), (2, 13), (2, 16)])
-        nessie_width = 20
-        nessie_height = 3
-
-        nessies = 0
-        for r in range(len(t.image) - nessie_height):
-            for c in range(len(t.image[0]) - nessie_width):
-                # print(f'{r},{c}')
-                if all([t.image[r + n[0]][c + n[1]] == '#' for n in nessie]):
-                    nessies += 1
-        if nessies:
-            print(repr(t))
-        return nessies
+        count = 0
+        for r in range(len(t.image) - self.NESSIE_HEIGHT):
+            for c in range(len(t.image[0]) - self.NESSIE_WIDTH):
+                if all([t.image[r + n[0]][c + n[1]] == '#' 
+                        for n in self.NESSIE_COORD]):
+                    count += 1
+        return count
 
     def get_image(self):
         image = []
@@ -181,7 +182,7 @@ class TileLibrary:
         tiles = self.arr[r]
         slice_image = None
         for c in range(len(tiles)):
-            tile_image = self.arr[r][c].strip_boarder()
+            tile_image = tiles[c].strip_boarder()
 
             if not slice_image:
                 slice_image = tile_image
@@ -193,7 +194,7 @@ class TileLibrary:
         return slice_image
 
 lib = TileLibrary()
-for s in open('20.ex').read().split('\n\n'):
+for s in open('20.in').read().split('\n\n'):
     splits = s.strip().split('\n')
     id_ = int(splits[0].split()[1][:-1])
     image =[list(r) for r in splits[1:]]
